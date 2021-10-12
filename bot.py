@@ -19,41 +19,50 @@ import logging
 import os
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from pymongo import MongoClient# this lets us connect to MongoDB
+from pymongo import MongoClient  # this lets us connect to MongoDB
 
 # Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 
 logger = logging.getLogger(__name__)
 
 APP_NAME = "https://aex01.herokuapp.com/"
-PORT = int(os.environ.get('PORT', '8443'))
+PORT = int(os.environ.get("PORT", "8443"))
 TOKEN = os.environ.get("BOT_SECRET")
 
-mongoClient = MongoClient("mongodb+srv://script0:script0@cluster0.0soh0.mongodb.net/aex01? retryWrites=true&w=majority")
+mongoClient = MongoClient(os.environ.get("MONGO_DB"))
+
 
 def chatId(update, context):
     """Send a message when the command /start is issued."""
-    update.message.reply_text('The chat id is : '+ str(update.message.chat.id))
+    update.message.reply_text("The chat id is : " + str(update.message.chat.id))
+
 
 def start(update, context):
     """Send a message when the command /start is issued."""
-    #print(update)
+    # print(update)
     try:
-        update.message.reply_text("Hi "+update.message.chat.first_name+" !  Thank's")
+        update.message.reply_text(
+            "Hi " + update.message.chat.first_name + " !  Thank's"
+        )
     except:
-        update.message.reply_text("Hi "+update.message.from_user.first_name+" !  Thank's")
-    
+        update.message.reply_text(
+            "Hi " + update.message.from_user.first_name + " !  Thank's"
+        )
+
     mongoClient.aex01.messages.insert_one(update.to_dict())
+
 
 def notCommandAllowed(update, context):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Not commands Allowed')
+    update.message.reply_text("Not commands Allowed")
+
 
 def help(update, context):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Just a simple Bot. Not commands found')
+    update.message.reply_text("Just a simple Bot. Not commands found")
 
 
 def echo(update, context):
@@ -80,15 +89,14 @@ def main():
     dp.add_handler(CommandHandler("help", help))
 
     # on noncommand i.e message - echo the message on Telegram
-    #dp.add_handler(MessageHandler(Filters.text, echo))
+    # dp.add_handler(MessageHandler(Filters.text, echo))
     dp.add_handler(MessageHandler(Filters.update, echo))
 
     # log all errors
     dp.add_error_handler(error)
-    updater.start_webhook(listen="0.0.0.0",
-                          port=PORT,
-                          url_path=TOKEN,
-                          webhook_url=APP_NAME + TOKEN)
+    updater.start_webhook(
+        listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=APP_NAME + TOKEN
+    )
     # Start the Bot
     updater.start_polling()
 
@@ -98,5 +106,5 @@ def main():
     updater.idle()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
