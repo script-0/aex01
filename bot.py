@@ -32,9 +32,7 @@ APP_NAME = "https://aex01.herokuapp.com/"
 PORT = int(os.environ.get("PORT", "8443"))
 TOKEN = os.environ.get("BOT_SECRET")
 
-mongoClient = MongoClient(
-    "mongodb+srv://script0:script0@cluster0.0soh0.mongodb.net/aex01? retryWrites=true&w=majority"
-)
+mongoClient = MongoClient(os.environ.get("MONGO_DB"))
 
 
 def chatId(update, context):
